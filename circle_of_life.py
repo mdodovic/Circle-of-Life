@@ -5,9 +5,11 @@ from automate import *
 
 SAME_VALUE = 0
 
+
 def initialization():
-    epsilon = 1e-3
-    delta = epsilon * 10
+    decimal_places = 2
+    epsilon = 10 ** (-decimal_places)
+    delta = epsilon
 
     start_time = 0
     delta_time = 1
@@ -18,7 +20,7 @@ def initialization():
 
     p = 6.
 
-    return epsilon, delta, A, L, start_time, delta_time, end_time, p
+    return decimal_places, epsilon, delta, A, L, start_time, delta_time, end_time, p
 
 
 def run_single_circle_of_life(start_A, start_L, start_t, end_t, delta_t, p, q, r):
@@ -33,33 +35,24 @@ def run_single_circle_of_life(start_A, start_L, start_t, end_t, delta_t, p, q, r
     L = start_L
 
     while current_time < end_time:
-        #        print(A, L)
-
         A = apply_p(A, p)
-        #        print(A, L)
         A, L = apply_q(L, A, q)
-        #        print(A, L)
         L = apply_r(L, r)
-        #        print(A, L)
 
         current_time += delta_t
 
         array_t.append(current_time)
         array_A.append(A)
         array_L.append(L)
-    #        print()
 
     array_A = np.asarray(array_A)
     array_L = np.asarray(array_L)
 
-    # plt.plot(array_t, array_A)
-    # plt.plot(array_t, array_L)
-    # plt.show()
-
-    return array_A, array_L
+    return array_t, array_A, array_L
 
 
-def check_animal_number(array_antelope, array_lion, epsilon):
+def equal_number_check(array_antelope, array_lion, epsilon):
+
     for i in range(1, len(array_antelope)):
         if np.abs(array_antelope[i] - array_antelope[i - 1]) > epsilon:
             return False
@@ -71,33 +64,47 @@ def check_animal_number(array_antelope, array_lion, epsilon):
     return True
 
 
+def check_animal_number(check_type, array_antelope, array_lion, epsilon):
+
+    if check_type == SAME_VALUE:
+        return equal_number_check(array_antelope, array_lion, epsilon)
+
+
 def main():
-    epsilon, delta, A, L, start_time, delta_time, end_time, p = initialization()
+    decimal_places, epsilon, delta, A, L, start_time, delta_time, end_time, p = initialization()
 
-    q = round(5.660377358490566, 3)
-    r = round(5.357142857142855, 3)
+    # q = round(5.660377358490566, decimal_places)
+    # r = round(5.357142857142855, decimal_places)
+    # array_t, array_A, array_L = run_single_circle_of_life(A, L, start_time, end_time, delta_time, p, q, r)
+    #
+    # if check_animal_number(SAME_VALUE, array_A, array_L, epsilon):
+    #     print(q, r)
+    #     plt.plot(array_t, array_A)
+    #     plt.plot(array_t, array_L)
+    #     plt.show()
 
-    array_A, array_L = run_single_circle_of_life(A, L, start_time, end_time, delta_time, p, q, r)
+    q = delta
+    while q < 100:
 
-    if check_animal_number(SAME_VALUE, array_A, array_L, epsilon):
-        return p, q, r
+        r = delta
+        while r < 100:
 
-    # current_q = 0
-    # while current_q < 100:
-    #
-    #     current_r = 0
-    #     while current_r < 100:
-    #
-    #         print(current_q, current_r)
-    #
-    #         array_A, array_L = run_single_circle_of_life(A, L, start_time, end_time, delta_time, p, q, r)
-    #
-    #         if check_animal_number(array_A, array_L, epsilon):
-    #             return p, q, r
-    #
-    #         current_r = current_r + delta
-    #
-    #     current_q = current_q + delta
+            # print(q, r)
+            array_t, array_A, array_L = run_single_circle_of_life(A, L, start_time, end_time, delta_time, p, q, r)
+
+            if check_animal_number(SAME_VALUE, array_A, array_L, epsilon):
+                plt.plot(array_t, array_A)
+                plt.plot(array_t, array_L)
+                plt.show()
+
+                return p, q, r
+
+            r = round(r + delta, decimal_places)
+
+        q = round(q + delta, decimal_places)
+
+        if (q * 100) % 10 == 0:
+            print(f"{q}% finished")
 
     return None, None, None
 
