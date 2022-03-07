@@ -72,7 +72,6 @@ def equal_number_check(array_time, array_antelope, array_lion, epsilon):
 def equal_ratio_check(array_time, array_antelope, array_lion, epsilon):
 
     array_ratio = array_lion / array_antelope
-    #print(array_antelope, array_lion)
 
     for i in range(1, len(array_ratio)):
         if np.abs(array_ratio[i] - array_ratio[i - 1]) > epsilon:
